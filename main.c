@@ -174,6 +174,9 @@ void main(void)
     __delay_ms(50);
     PORTAbits.E  = 0;
     
+    
+    
+    
     __delay_ms(50);
     PORTAbits.RS = 1;
     PORTCbits.D7 = 0;
@@ -196,6 +199,99 @@ void main(void)
     __delay_ms(50);
     PORTAbits.E  = 0;
     
+    __delay_ms(50);
+    PORTAbits.RS = 1;
+    PORTCbits.D7 = 0;
+    PORTCbits.D6 = 1;
+    PORTCbits.D5 = 0;
+    PORTCbits.D4 = 0;
+    __delay_ms(5);
+    PORTAbits.E  = 1;
+    __delay_ms(50);
+    PORTAbits.E  = 0;
+    ////////////////////////////////////////
+    __delay_ms(50);
+    PORTAbits.RS = 1;
+    PORTCbits.D7 = 0;
+    PORTCbits.D6 = 1;
+    PORTCbits.D5 = 0;
+    PORTCbits.D4 = 1;
+    __delay_ms(5);
+    PORTAbits.E  = 1;
+    __delay_ms(50);
+    PORTAbits.E  = 0;
+    
+    __delay_ms(50);
+    PORTAbits.RS = 1;
+    PORTCbits.D7 = 0;
+    PORTCbits.D6 = 1;
+    PORTCbits.D5 = 0;
+    PORTCbits.D4 = 0;
+    __delay_ms(5);
+    PORTAbits.E  = 1;
+    __delay_ms(50);
+    PORTAbits.E  = 0;
+    ////////////////////////////////////////
+    __delay_ms(50);
+    PORTAbits.RS = 1;
+    PORTCbits.D7 = 1;
+    PORTCbits.D6 = 1;
+    PORTCbits.D5 = 0;
+    PORTCbits.D4 = 0;
+    __delay_ms(5);
+    PORTAbits.E  = 1;
+    __delay_ms(50);
+    PORTAbits.E  = 0;
+    
+    __delay_ms(50);
+    PORTAbits.RS = 1;
+    PORTCbits.D7 = 0;
+    PORTCbits.D6 = 1;
+    PORTCbits.D5 = 0;
+    PORTCbits.D4 = 0;
+    __delay_ms(5);
+    PORTAbits.E  = 1;
+    __delay_ms(50);
+    PORTAbits.E  = 0;
+    ////////////////////////////////////////
+    __delay_ms(50);
+    PORTAbits.RS = 1;
+    PORTCbits.D7 = 1;
+    PORTCbits.D6 = 1;
+    PORTCbits.D5 = 0;
+    PORTCbits.D4 = 0;
+    __delay_ms(5);
+    PORTAbits.E  = 1;
+    __delay_ms(50);
+    PORTAbits.E  = 0;
+    
+   __delay_ms(50);
+    PORTAbits.RS = 1;
+    PORTCbits.D7 = 0;
+    PORTCbits.D6 = 1;
+    PORTCbits.D5 = 0;
+    PORTCbits.D4 = 0;
+    __delay_ms(5);
+    PORTAbits.E  = 1;
+    __delay_ms(50);
+    PORTAbits.E  = 0;
+    ////////////////////////////////////////
+    __delay_ms(50);
+    PORTAbits.RS = 1;
+    PORTCbits.D7 = 1;
+    PORTCbits.D6 = 1;
+    PORTCbits.D5 = 1;
+    PORTCbits.D4 = 1;
+    __delay_ms(5);
+    PORTAbits.E  = 1;
+    __delay_ms(50);
+    PORTAbits.E  = 0;
+    
+    
+    
+    
+    
+    
      __delay_ms(50);
     PORTAbits.RS = 0;
     PORTCbits.D7 = 0;
@@ -206,8 +302,54 @@ void main(void)
     PORTAbits.E  = 1;
     __delay_ms(50);
     PORTAbits.E  = 0;
+    ////////////////////////////////////////
+    __delay_ms(50);
+    PORTAbits.RS = 0;
+    PORTCbits.D7 = 1;
+    PORTCbits.D6 = 1;
+    PORTCbits.D5 = 1;
+    PORTCbits.D4 = 1;
+    __delay_ms(5);
+    PORTAbits.E  = 1;
+    __delay_ms(50);
+    PORTAbits.E  = 0;
+    
+    
+    
+     __delay_ms(50);
+    PORTAbits.RS = 0;
+    PORTCbits.D7 = 1;
+    PORTCbits.D6 = 0;
+    PORTCbits.D5 = 0;
+    PORTCbits.D4 = 0;
+    __delay_ms(5);
+    PORTAbits.E  = 1;
+    __delay_ms(50);
+    PORTAbits.E  = 0;
     
     __delay_ms(50);
+    PORTAbits.RS = 0;
+    PORTCbits.D7 = 0;
+    PORTCbits.D6 = 0;
+    PORTCbits.D5 = 0;
+    PORTCbits.D4 = 0;
+    __delay_ms(5);
+    PORTAbits.E  = 1;
+    __delay_ms(50);
+    PORTAbits.E  = 0;
+    
+     __delay_ms(50);
+    PORTAbits.RS = 0;
+    PORTCbits.D7 = 0;
+    PORTCbits.D6 = 0;
+    PORTCbits.D5 = 0;
+    PORTCbits.D4 = 1;
+    __delay_ms(5);
+    PORTAbits.E  = 1;
+    __delay_ms(50);
+    PORTAbits.E  = 0;
+    ////////////////////////////////////////
+     __delay_ms(50);
     PORTAbits.RS = 0;
     PORTCbits.D7 = 1;
     PORTCbits.D6 = 1;
@@ -217,6 +359,10 @@ void main(void)
     PORTAbits.E  = 1;
     __delay_ms(50);
     PORTAbits.E  = 0;
+    ////////////////////////////////////////
+
+
+
     
     while(1);
 
