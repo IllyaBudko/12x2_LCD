@@ -91,6 +91,43 @@ void __lcd_send_char(uint8_t ascii)
     __lcd_en_pulse();
 }
 
+void LCD_send_string(uint8_t string[])
+{
+    uint8_t i = 0;
+    for(i = 0;string[i]!='\0';i++)
+    {
+        __lcd_send_char(string[i]);
+    }
+}
+
+void __lcd_display_ctrl(uint8_t display, uint8_t cursor, uint8_t cursor_pos_blink)
+{
+    __lcd_cmd(0x00);
+    
+    uint8_t temp = 0x0C;
+    if(display == 1)
+    {
+        if(cursor == 1)
+        {
+            temp |= 1 << 1;
+        }
+        if(cursor_pos_blink == 1)
+        {
+            temp |= 1 << 0;
+        }
+        __lcd_cmd(temp);
+    }
+    else
+    {
+        __lcd_cmd(0x08);
+    }
+}
+
+void LCD_display_clear(void)
+{
+    __lcd_cmd(0x01);
+}
+
 void LCD_set_cursor(uint8_t row, uint8_t column)
 {   
     if(row == 1)
@@ -153,6 +190,7 @@ void main(void)
     ////////////////////////////////////////
     
     LCD_Init();
+    uint8_t string[] = {"World!"};
     
     __lcd_send_char('H');
     __lcd_send_char('e');
@@ -160,40 +198,11 @@ void main(void)
     __lcd_send_char('l');
     __lcd_send_char('o');
     
-    
-    
-    
-    
-    
-     __delay_ms(50);
-    PORTAbits.RS = 0;
-    PORTCbits.D7 = 0;
-    PORTCbits.D6 = 0;
-    PORTCbits.D5 = 0;
-    PORTCbits.D4 = 0;
-    __delay_ms(5);
-    PORTAbits.E  = 1;
-    __delay_ms(50);
-    PORTAbits.E  = 0;
-    ////////////////////////////////////////
-    __delay_ms(50);
-    PORTAbits.RS = 0;
-    PORTCbits.D7 = 1;
-    PORTCbits.D6 = 1;
-    PORTCbits.D5 = 1;
-    PORTCbits.D4 = 1;
-    __delay_ms(5);
-    PORTAbits.E  = 1;
-    __delay_ms(50);
-    PORTAbits.E  = 0;
+    __lcd_display_ctrl(1,0,1);
 
     LCD_set_cursor(2,10);
     
-    __lcd_send_char('H');
-    __lcd_send_char('e');
-    __lcd_send_char('l');
-    __lcd_send_char('l');
-    __lcd_send_char('o');
+    LCD_send_string(string);
 
 
     
