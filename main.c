@@ -46,213 +46,98 @@ void __lcd_en_pulse(void)
     PORTAbits.E  = 0;
 }
 
-void __lcd_cmd(uint8_t cmd)
+void __lcd_port_write(uint8_t data)
 {
-    //4bit setup
-    //send high nibble first 
-    PORTAbits.RS = 0;
-    
-    PORTCbits.D7 = (cmd & (1 << 7));
-    PORTCbits.D6 = (cmd & (1 << 6));
-    PORTCbits.D5 = (cmd & (1 << 5));
-    PORTCbits.D4 = (cmd & (1 << 4));
-    __delay_us(10);
-    PORTAbits.E  = 1;
-    __delay_us(500);
-    PORTAbits.E  = 0;
-    
-    //send low nibble second
-    PORTAbits.RS = 0;
-    
-    PORTCbits.D7 = (cmd & (1 << 3));
-    PORTCbits.D6 = (cmd & (1 << 2));
-    PORTCbits.D5 = (cmd & (1 << 1));
-    PORTCbits.D4 = (cmd & (1 << 0));
-    __delay_us(10);
-    PORTAbits.E  = 1;
-    __delay_us(500);
-    PORTAbits.E  = 0;
-}
-
-void __lcd_set_cursor(uint8_t row, uint8_t column)
-{
-    PORTAbits.RS = 0;
-    
-    PORTCbits.D7 = 1;
-    if(row == 1)
-    {
-        PORTCbits.D6 = 0;
-    }
-    else if(row == 2)
-    {
-        PORTCbits.D6 = 1;
-    }
-    PORTCbits.D5 = 0;
-    PORTCbits.D4 = 0;
-    __delay_us(10);
-    PORTAbits.E  = 1;
-    __delay_us(500);
-    PORTAbits.E  = 0;
-    
-    //send low nibble second
-    PORTAbits.RS = 0;
-    
-    if(column & 1)
+    if(data & 0x01)
 		D4 = 1;
 	else
 		D4 = 0;
 
-	if(column & 2)
+	if(data & 0x02)
 		D5 = 1;
 	else
 		D5 = 0;
 
-	if(column & 4)
+	if(data & 0x04)
 		D6 = 1;
 	else
 		D6 = 0;
-
-	if(column & 8)
+    
+	if(data & 0x08)
 		D7 = 1;
 	else
 		D7 = 0;
-    __delay_us(10);
-    PORTAbits.E  = 1;
-    __delay_us(500);
-    PORTAbits.E  = 0;
+}
+
+void __lcd_cmd(uint8_t cmd)
+{
+    RS = 0;
+    __lcd_port_write(cmd);
+    __lcd_en_pulse();
     
+}
+void __lcd_send_char(uint8_t ascii)
+{
+    RS = 1;
+    
+    uint8_t high = 0;
+    uint8_t low  = 0;
+    high = ascii >> 4;
+    low  = ascii & 0x0F;    
+    
+    __lcd_port_write(high);
+    __lcd_en_pulse();
+    __lcd_port_write(low);
+    __lcd_en_pulse();
+}
+
+void LCD_set_cursor(uint8_t row, uint8_t column)
+{   
+    if(row == 1)
+    {
+        __lcd_cmd(0x08);
+    }
+    else if(row == 2)
+    {
+        __lcd_cmd(0x0C);
+    }
+    uint8_t temp = column - 1;
+    __lcd_cmd(temp);
 }
 
 void LCD_Init()
 {
     __delay_ms(50);
     //set write command
-      PORTAbits.RS = 0;
-      
-    //function set, interface 8bit
-    PORTCbits.D7 = 0;
-    PORTCbits.D6 = 0;
-    PORTCbits.D5 = 1;
-    PORTCbits.D4 = 1;
-    __delay_us(5);
-    PORTAbits.E  = 1;
-    __delay_us(500);
-    PORTAbits.E  = 0;
-    
+    __lcd_cmd(0x03);
     __delay_ms(5);
     
     //function set, interface 8bit
-    PORTCbits.D7 = 0;
-    PORTCbits.D6 = 0;
-    PORTCbits.D5 = 1;
-    PORTCbits.D4 = 1;
-    __delay_us(5);
-    PORTAbits.E  = 1;
-    __delay_us(500);
-    PORTAbits.E  = 0;
-    
+    __lcd_cmd(0x03);
     __delay_us(120);
     
     //function set, interface 8bit
-    PORTCbits.D7 = 0;
-    PORTCbits.D6 = 0;
-    PORTCbits.D5 = 1;
-    PORTCbits.D4 = 1;
-    __delay_us(5);
-    PORTAbits.E  = 1;
-    __delay_us(500);
-    PORTAbits.E  = 0;
+    __lcd_cmd(0x03);
     
     //function set, interface 8bit, setting to 4bit
-    PORTCbits.D7 = 0;
-    PORTCbits.D6 = 0;
-    PORTCbits.D5 = 1;
-    PORTCbits.D4 = 0;
-    __delay_us(5);
-    PORTAbits.E  = 1;
-    __delay_us(500);
-    PORTAbits.E  = 0;
+    __lcd_cmd(0x02);
     
     // After this point commands are written in 2 bursts of 1 nibble
     //function set, interface 4bit 
-    PORTCbits.D7 = 0;
-    PORTCbits.D6 = 0;
-    PORTCbits.D5 = 1;
-    PORTCbits.D4 = 0;
-    __delay_us(5);
-    PORTAbits.E  = 1;
-    __delay_us(500);
-    PORTAbits.E  = 0;
-    
-    //function set, interface 4bit, setting number of lines and font size
-    PORTCbits.D7 = 1;   //Number of lines
-    PORTCbits.D6 = 0;   //Font size
-    PORTCbits.D5 = 0;
-    PORTCbits.D4 = 0;
-    __delay_us(5);
-    PORTAbits.E  = 1;
-    __delay_us(500);
-    PORTAbits.E  = 0;
+    __lcd_cmd(0x02);
+    __lcd_cmd(0x08);
     
     //display off 
-    PORTCbits.D7 = 0;
-    PORTCbits.D6 = 0;
-    PORTCbits.D5 = 0;
-    PORTCbits.D4 = 0;
-    __delay_us(5);
-    PORTAbits.E  = 1;
-    __delay_us(500);
-    PORTAbits.E  = 0;
-    
-    //display off
-    PORTCbits.D7 = 1;
-    PORTCbits.D6 = 0;
-    PORTCbits.D5 = 0;
-    PORTCbits.D4 = 0;
-    __delay_us(5);
-    PORTAbits.E  = 1;
-    __delay_us(500);
-    PORTAbits.E  = 0;
+    __lcd_cmd(0x00);
+    __lcd_cmd(0x08);
     
     //display clear
-    PORTCbits.D7 = 0;
-    PORTCbits.D6 = 0;
-    PORTCbits.D5 = 0;
-    PORTCbits.D4 = 0;
-    __delay_us(5);
-    PORTAbits.E  = 1;
-    __delay_us(500);
-    PORTAbits.E  = 0;
-    
-    //display clear
-    PORTCbits.D7 = 0;
-    PORTCbits.D6 = 0;
-    PORTCbits.D5 = 0;
-    PORTCbits.D4 = 1;
-    __delay_us(5);
-    PORTAbits.E  = 1;
-    __delay_us(500);
-    PORTAbits.E  = 0;
+    __lcd_cmd(0x00);
+    __lcd_cmd(0x01);
     
     //entry mode
-    PORTCbits.D7 = 0;
-    PORTCbits.D6 = 0;
-    PORTCbits.D5 = 0;
-    PORTCbits.D4 = 0;
-    __delay_us(5);
-    PORTAbits.E  = 1;
-    __delay_us(500);
-    PORTAbits.E  = 0;
-    
-    //entry mode
-    PORTCbits.D7 = 0;
-    PORTCbits.D6 = 1;
-    PORTCbits.D5 = 1;   //Automatically increment address
-    PORTCbits.D4 = 0;   //No shift
-    __delay_us(5);
-    PORTAbits.E  = 1;
-    __delay_us(500);
-    PORTAbits.E  = 0;
+    __lcd_cmd(0x00);
+    __lcd_cmd(0x06);
 }
 
 void main(void)
@@ -269,117 +154,11 @@ void main(void)
     
     LCD_Init();
     
-    
-    
-    __delay_ms(50);
-    PORTAbits.RS = 1;
-    PORTCbits.D7 = 0;
-    PORTCbits.D6 = 1;
-    PORTCbits.D5 = 0;
-    PORTCbits.D4 = 0;
-    __delay_ms(5);
-    PORTAbits.E  = 1;
-    __delay_ms(50);
-    PORTAbits.E  = 0;
-    ////////////////////////////////////////
-    __delay_ms(50);
-    RS = 1;
-    D7 = 1;
-    D6 = 0;
-    D5 = 0;
-    D4 = 0;
-    __delay_ms(5);
-    PORTAbits.E  = 1;
-    __delay_ms(50);
-    PORTAbits.E  = 0;
-    
-    __delay_ms(50);
-    PORTAbits.RS = 1;
-    PORTCbits.D7 = 0;
-    PORTCbits.D6 = 1;
-    PORTCbits.D5 = 0;
-    PORTCbits.D4 = 0;
-    __delay_ms(5);
-    PORTAbits.E  = 1;
-    __delay_ms(50);
-    PORTAbits.E  = 0;
-    ////////////////////////////////////////
-    __delay_ms(50);
-    PORTAbits.RS = 1;
-    PORTCbits.D7 = 0;
-    PORTCbits.D6 = 1;
-    PORTCbits.D5 = 0;
-    PORTCbits.D4 = 1;
-    __delay_ms(5);
-    PORTAbits.E  = 1;
-    __delay_ms(50);
-    PORTAbits.E  = 0;
-    
-    __delay_ms(50);
-    PORTAbits.RS = 1;
-    PORTCbits.D7 = 0;
-    PORTCbits.D6 = 1;
-    PORTCbits.D5 = 0;
-    PORTCbits.D4 = 0;
-    __delay_ms(5);
-    PORTAbits.E  = 1;
-    __delay_ms(50);
-    PORTAbits.E  = 0;
-    ////////////////////////////////////////
-    __delay_ms(50);
-    PORTAbits.RS = 1;
-    PORTCbits.D7 = 1;
-    PORTCbits.D6 = 1;
-    PORTCbits.D5 = 0;
-    PORTCbits.D4 = 0;
-    __delay_ms(5);
-    PORTAbits.E  = 1;
-    __delay_ms(50);
-    PORTAbits.E  = 0;
-    
-    __delay_ms(50);
-    PORTAbits.RS = 1;
-    PORTCbits.D7 = 0;
-    PORTCbits.D6 = 1;
-    PORTCbits.D5 = 0;
-    PORTCbits.D4 = 0;
-    __delay_ms(5);
-    PORTAbits.E  = 1;
-    __delay_ms(50);
-    PORTAbits.E  = 0;
-    ////////////////////////////////////////
-    __delay_ms(50);
-    PORTAbits.RS = 1;
-    PORTCbits.D7 = 1;
-    PORTCbits.D6 = 1;
-    PORTCbits.D5 = 0;
-    PORTCbits.D4 = 0;
-    __delay_ms(5);
-    PORTAbits.E  = 1;
-    __delay_ms(50);
-    PORTAbits.E  = 0;
-    
-   __delay_ms(50);
-    PORTAbits.RS = 1;
-    PORTCbits.D7 = 0;
-    PORTCbits.D6 = 1;
-    PORTCbits.D5 = 0;
-    PORTCbits.D4 = 0;
-    __delay_ms(5);
-    PORTAbits.E  = 1;
-    __delay_ms(50);
-    PORTAbits.E  = 0;
-    ////////////////////////////////////////
-    __delay_ms(50);
-    PORTAbits.RS = 1;
-    PORTCbits.D7 = 1;
-    PORTCbits.D6 = 1;
-    PORTCbits.D5 = 1;
-    PORTCbits.D4 = 1;
-    __delay_ms(5);
-    PORTAbits.E  = 1;
-    __delay_ms(50);
-    PORTAbits.E  = 0;
+    __lcd_send_char('H');
+    __lcd_send_char('e');
+    __lcd_send_char('l');
+    __lcd_send_char('l');
+    __lcd_send_char('o');
     
     
     
@@ -407,102 +186,14 @@ void main(void)
     PORTAbits.E  = 1;
     __delay_ms(50);
     PORTAbits.E  = 0;
-    
-    
-    
-     __delay_ms(50);
-    PORTAbits.RS = 0;
-    PORTCbits.D7 = 1;
-    PORTCbits.D6 = 0;
-    PORTCbits.D5 = 0;
-    PORTCbits.D4 = 0;
-    __delay_ms(5);
-    PORTAbits.E  = 1;
-    __delay_ms(50);
-    PORTAbits.E  = 0;
-    
-    __delay_ms(50);
-    PORTAbits.RS = 0;
-    PORTCbits.D7 = 0;
-    PORTCbits.D6 = 0;
-    PORTCbits.D5 = 0;
-    PORTCbits.D4 = 0;
-    __delay_ms(5);
-    PORTAbits.E  = 1;
-    __delay_ms(50);
-    PORTAbits.E  = 0;
-    
-     __delay_ms(50);
-    PORTAbits.RS = 0;
-    PORTCbits.D7 = 0;
-    PORTCbits.D6 = 0;
-    PORTCbits.D5 = 0;
-    PORTCbits.D4 = 1;
-    __delay_ms(5);
-    PORTAbits.E  = 1;
-    __delay_ms(50);
-    PORTAbits.E  = 0;
-    ////////////////////////////////////////
-     __delay_ms(50);
-    PORTAbits.RS = 0;
-    PORTCbits.D7 = 1;
-    PORTCbits.D6 = 1;
-    PORTCbits.D5 = 0;
-    PORTCbits.D4 = 0;
-    __delay_ms(5);
-    PORTAbits.E  = 1;
-    __delay_ms(50);
-    PORTAbits.E  = 0;
-    ////////////////////////////////////////
 
-    __lcd_set_cursor(2,10);
-
-//        PORTAbits.RS = 0;
-//    
-//    PORTCbits.D7 = 1;
-//    PORTCbits.D6 = 1;
-//    PORTCbits.D5 = 0;
-//    PORTCbits.D4 = 0;
-//    __delay_us(10);
-//    PORTAbits.E  = 1;
-//    __delay_us(500);
-//    PORTAbits.E  = 0;
-//    
-//    //send low nibble second
-//    PORTAbits.RS = 0;
-//    
-//    PORTCbits.D7 = 0;
-//    PORTCbits.D6 = 1;
-//    PORTCbits.D5 = 0;
-//    PORTCbits.D4 = 0;
-//    __delay_us(10);
-//    PORTAbits.E  = 1;
-//    __delay_us(500);
-//    PORTAbits.E  = 0;
+    LCD_set_cursor(2,10);
     
-    
-    
-       __delay_ms(50);
-    PORTAbits.RS = 1;
-    PORTCbits.D7 = 0;
-    PORTCbits.D6 = 1;
-    PORTCbits.D5 = 0;
-    PORTCbits.D4 = 0;
-    __delay_ms(5);
-    PORTAbits.E  = 1;
-    __delay_ms(50);
-    PORTAbits.E  = 0;
-    ////////////////////////////////////////
-    __delay_ms(50);
-    PORTAbits.RS = 1;
-    PORTCbits.D7 = 1;
-    PORTCbits.D6 = 1;
-    PORTCbits.D5 = 1;
-    PORTCbits.D4 = 1;
-    __delay_ms(5);
-    PORTAbits.E  = 1;
-    __delay_ms(50);
-    PORTAbits.E  = 0;
+    __lcd_send_char('H');
+    __lcd_send_char('e');
+    __lcd_send_char('l');
+    __lcd_send_char('l');
+    __lcd_send_char('o');
 
 
     
