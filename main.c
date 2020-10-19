@@ -76,9 +76,6 @@ void __lcd_cmd(uint8_t cmd)
 
 void __lcd_set_cursor(uint8_t row, uint8_t column)
 {
-
-    
-    
     PORTAbits.RS = 0;
     
     PORTCbits.D7 = 1;
@@ -100,10 +97,25 @@ void __lcd_set_cursor(uint8_t row, uint8_t column)
     //send low nibble second
     PORTAbits.RS = 0;
     
-    PORTCbits.D7 = 1;
-    PORTCbits.D6 = 1;
-    PORTCbits.D5 = 1;
-    PORTCbits.D4 = 0;
+    if(column & 1)
+		D4 = 1;
+	else
+		D4 = 0;
+
+	if(column & 2)
+		D5 = 1;
+	else
+		D5 = 0;
+
+	if(column & 4)
+		D6 = 1;
+	else
+		D6 = 0;
+
+	if(column & 8)
+		D7 = 1;
+	else
+		D7 = 0;
     __delay_us(10);
     PORTAbits.E  = 1;
     __delay_us(500);
