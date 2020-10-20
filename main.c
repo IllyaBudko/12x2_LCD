@@ -100,7 +100,7 @@ void LCD_send_string(uint8_t string[])
     }
 }
 
-void __lcd_display_ctrl(uint8_t display, uint8_t cursor, uint8_t cursor_pos_blink)
+void __lcd_display_ctrl(uint8_t display, uint8_t cursor, uint8_t blink)
 {
     __lcd_cmd(0x00);
     
@@ -111,7 +111,7 @@ void __lcd_display_ctrl(uint8_t display, uint8_t cursor, uint8_t cursor_pos_blin
         {
             temp |= 1 << 1;
         }
-        if(cursor_pos_blink == 1)
+        if(blink == 1)
         {
             temp |= 1 << 0;
         }
@@ -120,6 +120,22 @@ void __lcd_display_ctrl(uint8_t display, uint8_t cursor, uint8_t cursor_pos_blin
     else
     {
         __lcd_cmd(0x08);
+    }
+}
+
+void __lcd_shift_display(uint8_t LeftRight)
+{
+    __lcd_cmd(0x01);
+    
+    uint8_t temp = 0x08;
+    if(LeftRight == 1)
+    {
+        temp = 0x0C;
+        __lcd_cmd(temp);
+    }
+    else
+    {
+        __lcd_cmd(temp);
     }
 }
 
@@ -198,11 +214,25 @@ void main(void)
     __lcd_send_char('l');
     __lcd_send_char('o');
     
-    __lcd_display_ctrl(1,0,1);
+    __lcd_display_ctrl(1,0,0);
 
-    LCD_set_cursor(2,10);
+    LCD_set_cursor(2,1);
     
     LCD_send_string(string);
+    
+    while(1)
+    {
+        for(uint8_t i = 0; i < 10; i++)
+        {
+            __lcd_shift_display(1);
+            __delay_ms(250);
+        }
+        for(uint8_t i = 0; i < 10; i++)
+        {
+            __lcd_shift_display(0);
+            __delay_ms(250);
+        }
+    }
 
 
     
