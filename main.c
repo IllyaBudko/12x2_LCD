@@ -38,6 +38,9 @@
 #define D6  RC2
 #define D7  RC3
 
+#define A   RC4
+#define B   RC5
+
 void __lcd_en_pulse(void)
 {
     __delay_us(10);
@@ -201,10 +204,11 @@ void main(void)
     TRISA  = 0x00;
     PORTA  = 0x00;
     
-    TRISC  = 0x00;
+    TRISC  = 0x30;
     PORTC  = 0x00;
     ////////////////////////////////////////
-    
+int currentStateCLK;
+int lastStateCLK;
     LCD_Init();
     uint8_t string[] = {"World!"};
     
@@ -222,16 +226,21 @@ void main(void)
     
     while(1)
     {
-        for(uint8_t i = 0; i < 10; i++)
+	currentStateCLK = A;
+
+	if (currentStateCLK != lastStateCLK  && currentStateCLK == 1){
+
+		if (B != currentStateCLK)
         {
-            __lcd_shift_display(1);
-            __delay_ms(250);
-        }
-        for(uint8_t i = 0; i < 10; i++)
+			__lcd_shift_display(1);
+		} else
         {
-            __lcd_shift_display(0);
-            __delay_ms(250);
-        }
+			__lcd_shift_display(0);
+		}
+	}
+	lastStateCLK = currentStateCLK;
+        
+        
     }
 
 
